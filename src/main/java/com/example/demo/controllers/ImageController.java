@@ -4,7 +4,9 @@ import com.example.demo.models.NewModel;
 import com.example.demo.views.NewView;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 public class ImageController {
@@ -53,14 +55,23 @@ public class ImageController {
         }
     }
 
-    @GetMapping(value = { "/api/employeeswithmap/{id}", "/api/employeeswithmap" })
+    @GetMapping(value = { "/api/employeeswithmap/{id}", "/api/employeeswithmap"})
     @ResponseBody
-    public String getEmployeesByIdWithMap(@PathVariable Map<String, String> pathVarsMap) {
-        String id = pathVarsMap.get("id");
-        if (id != null) {
-            return "ID: " + id;
+    public String getDefaultEmployeesByIdWithOptional(@PathVariable Optional<List<String>> id) {
+        if (id.isPresent()) {
+            return "ID: " + id.get();
         } else {
-            return "ID missing";
+            return "ID: missing";
+        }
+    }
+
+    @GetMapping(value = {"/api/foos/{id}","/api/foos"})
+    @ResponseBody
+    public String getFoos(@RequestParam Optional<List<String>> id) {
+        if (id.isPresent()) {
+            return "ID: " + id.get();
+        } else {
+            return "ID: missing";
         }
     }
 
