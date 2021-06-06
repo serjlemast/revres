@@ -1,11 +1,12 @@
 package com.example.demo.controllers;
 
 import com.example.demo.models.NewModel;
+import com.example.demo.models.ImageClass;
 import com.example.demo.views.NewView;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -15,7 +16,7 @@ public class ImageController {
         return String.format("Hellos %s!", name);
     }
 
-    @GetMapping("/images")
+    @GetMapping("/imagesh")
     public String getImages(@RequestParam(value = "data") String data, @RequestParam(value = "text") String text) {
         return "Image , data : " + data + ", text: " + text;
     }
@@ -23,11 +24,11 @@ public class ImageController {
     public String getsds(@RequestParam(value = "sdsc",required = false) String data) {
         return "Image , data : " + data;
     }
-    @PostMapping("/images")
+    @PostMapping("/imagesh")
     public String createImage(){
         return "image";
     }
-    @DeleteMapping("/images")
+    @DeleteMapping("/imagesh")
     public String deleteImage(){
         return "deleted";
     }
@@ -74,5 +75,25 @@ public class ImageController {
             return "ID: missing";
         }
     }
+    @GetMapping("/images/{id}")
+    public Image getImageById(int id){System.out.println(id);
+        return null;}
+
+    @GetMapping("/images")
+    public List<Image> getImages(Image image){System.out.println(image);
+        return null;
+    }
+
+    @PostMapping("/images")
+    public Image createNewImage(Image image){System.out.println(image);
+        return null; }
+
+    @PutMapping("/images")
+    public Image updateImage(Image image){System.out.println(image);
+        return null; }
+
+    @DeleteMapping("/images/{id}")
+    public int deleteImageById(int id){System.out.println(id);
+        return id; }
 
 }
