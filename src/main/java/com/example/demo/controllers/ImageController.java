@@ -1,99 +1,59 @@
 package com.example.demo.controllers;
 
-import com.example.demo.models.NewModel;
-import com.example.demo.models.ImageClass;
-import com.example.demo.views.NewView;
+import com.example.demo.models.Image;
+import com.example.demo.services.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.*;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class ImageController {
-    @GetMapping("/hello")
-    public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
-        return String.format("Hellos %s!", name);
-    }
+    @Autowired
+    private Service service;
 
-    @GetMapping("/imagesh")
-    public String getImages(@RequestParam(value = "data") String data, @RequestParam(value = "text") String text) {
-        return "Image , data : " + data + ", text: " + text;
-    }
-    @GetMapping("/sds")
-    public String getsds(@RequestParam(value = "sdsc",required = false) String data) {
-        return "Image , data : " + data;
-    }
-    @PostMapping("/imagesh")
-    public String createImage(){
-        return "image";
-    }
-    @DeleteMapping("/imagesh")
-    public String deleteImage(){
-        return "deleted";
-    }
-    @PostMapping("/test")
-    public NewView test(@RequestBody NewModel model){
-
-        System.out.println("model = "+ model);
-        NewView v = new NewView();
-        if (model.getId()==-1){
-            v.setStatus("error");
-        }
-        if (model.getId()>0){
-            v.setStatus("ok!");
-        }
-        return v;
-    }
-
-    @GetMapping(value = { "/api/employees/", "/api/employees/{id}" })
-    @ResponseBody
-    public String getEmployeesByIdWithRequiredFalse(@PathVariable(required = false) String id) {
-        if (id != null) {
-            return "ID: " + id;
-        } else {
-            return "ID missing";
-        }
-    }
-
-    @GetMapping(value = { "/api/employeeswithmap/{id}", "/api/employeeswithmap"})
-    @ResponseBody
-    public String getDefaultEmployeesByIdWithOptional(@PathVariable Optional<List<String>> id) {
-        if (id.isPresent()) {
-            return "ID: " + id.get();
-        } else {
-            return "ID: missing";
-        }
-    }
-
-    @GetMapping(value = {"/api/foos/{id}","/api/foos"})
-    @ResponseBody
-    public String getFoos(@RequestParam Optional<List<String>> id) {
-        if (id.isPresent()) {
-            return "ID: " + id.get();
-        } else {
-            return "ID: missing";
-        }
-    }
     @GetMapping("/images/{id}")
-    public Image getImageById(int id){System.out.println(id);
-        return null;}
+    public ResponseEntity<Image> getImageById(@PathVariable int id) {
+        if(id<0){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            //todo прочитать рекоменацию...
+        }
+        Image image = service.getImageById(id);
+        if(image == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(image);
+    }
 
     @GetMapping("/images")
-    public List<Image> getImages(Image image){System.out.println(image);
-        return null;
+    public List<Image> getImages() {
+        return service.getImages();
     }
 
     @PostMapping("/images")
-    public Image createNewImage(Image image){System.out.println(image);
-        return null; }
+    public Image createNewImage(@RequestBody Image image) {
+        if (image == null) {
+            throw new RuntimeException("image not found in request");
+        }
+        if (image.getId() < 0) {
+            throw new RuntimeException("wrong image id");
+        }
+        service.createImage(image.getId(), image);
+        return image;
+    }
 
     @PutMapping("/images")
-    public Image updateImage(Image image){System.out.println(image);
-        return null; }
+    public Image updateImage(@RequestBody Image image) {
+        service.updateImage(image);
+        return image;
+    }
 
     @DeleteMapping("/images/{id}")
-    public int deleteImageById(int id){System.out.println(id);
-        return id; }
+    public int deleteImageById(@PathVariable Integer id) {
+        service.deleteImageById(id);
+        return id;
+    }
 
 }
